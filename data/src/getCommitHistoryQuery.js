@@ -14,6 +14,7 @@ const getCommitHistory = gql`
                     languages(first: 2, orderBy: { field: SIZE, direction: DESC }) {
                         nodes {
                             name
+                            color
                         }
                     }
                     refs(

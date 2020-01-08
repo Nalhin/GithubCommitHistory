@@ -4,13 +4,16 @@ const dataParser = (data) => {
     data.user.repositories.nodes.forEach((repo) => {
         repo.refs.edges.forEach((ref) =>
             ref.node.target.history.edges.forEach((commit) => {
-                const languages = repo.languages.nodes.map((language) =>
-                    language.name,
+                const languages = repo.languages.nodes.map((language) => ({
+                        name: language.name,
+                        color: language.color
+                    })
                 );
                 const {__typename, ...rest} = commit.node;
                 commits.push({
                     ...rest,
-                    languages: languages,
+                    language: languages[0].name,
+                    languageColor: languages[0].color,
                     repositoryName: repo.name,
                     repositoryUrl: repo.url,
                 });
