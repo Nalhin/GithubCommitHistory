@@ -25,16 +25,16 @@ Tu cos o technologiach
 Aplikacja udostępnia:
 
 
--szczegóły repozytoriów, 
+- szczegóły repozytoriów, 
 
 
--zmiany w repozytoriach,
+- zmiany w repozytoriach,
 
 
--aktywność w czasie,
+- aktywność w czasie,
 
 
--najczęściej używane słowa podczas zmian w repozytorium.
+- najczęściej używane słowa podczas zmian w repozytorium.
 
 
 Domyślnie dane pochodzą z GitHub'a Krzysztofa, aczkolwiek można wybrać dowolnego użytkownika.
