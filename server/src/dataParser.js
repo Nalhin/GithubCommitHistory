@@ -10,10 +10,13 @@ const dataParser = (data) => {
                     })
                 );
                 const {__typename, ...rest} = commit.node;
+                const languageData = languages.length > 0 ? {
+                    language: languages[0].name || 'None',
+                    languageColor: languages[0].color || '#ffffff'
+                } : {language: "None", languageColor: "#ffffff"};
                 commits.push({
                     ...rest,
-                    language: languages[0].name,
-                    languageColor: languages[0].color || '#ffffff',
+                    ...languageData,
                     repositoryName: repo.name,
                     repositoryUrl: repo.url,
                 });

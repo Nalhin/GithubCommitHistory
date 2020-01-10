@@ -8,12 +8,10 @@ app.use(compression());
 
 const port = process.env.PORT;
 
-app.get('/:name', async (req, res) => {
+app.get('/user/:name', async (req, res) => {
     const {name} = req.params;
-
     const query = require("./getCommitHistoryQuery");
     try {
-
         const response = await client.query({
             query,
             variables: {githubUserLogin: name}

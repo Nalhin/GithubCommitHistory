@@ -19,7 +19,11 @@ load_user_page <-mainPanel(
     ),
     textInput("userName", "User Name"),
     actionButton("loadUser", "Load diffrent user"),
-    textOutput("dataStatus"),
+    div(style="font-size:20px;
+        color:red;
+        padding-top:8px;",
+        textOutput("loadError"),
+    ),
     width = 12
 )
 

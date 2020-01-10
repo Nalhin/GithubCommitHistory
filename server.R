@@ -25,38 +25,43 @@ shinyServer(function(input, output) {
     # Load User
   
     user_name<-reactiveVal({
-      name<-"Nalhin"
+      "Nalhin"
     })
   
     load_error<-reactiveVal({
-      error<-""
+      ""
     })
     
     commit_data_frame <- reactiveVal({
-      data<- as.data.frame(fromJSON("commitData.json"))
+       as.data.frame(fromJSON("commitData.json"))
     })
     
     output$userStatus <-renderText({
       paste("Loaded User -",user_name())
     })
   
+    output$loadError <-renderText({
+      load_error()
+    })
+    
     observeEvent(input$loadUser, {
-      if(!is.null(input$userName)){
-        data<-as.data.frame(fromJSON(paste0("https://api-r.krzysztofolipra.com/",input$userName)))
-        print(data)
+      if(input$userName != "" & !is.null(input$userName)){
+        data<-as.data.frame(fromJSON(paste0("https://api-r.krzysztofolipra.com/user/",input$userName)))
         if(length(data)>1){
           commit_data_frame({data})
           user_name({input$userName})
+          load_error({""})
+        }else{
+          load_error({paste("Could not load data for", input$userName)})
         }
+      }else{
+        load_error({"Input is empty"})
       }
     })
   
     # Summary
     
-  
-    
     output$repositories <- 
-    
       DT::renderDataTable({
       datatable( commit_data_frame() %>% 
                   group_by(repositoryName) %>%
@@ -142,7 +147,6 @@ shinyServer(function(input, output) {
     }
     
     create_word_matrix <- function(words){
-      
       dtm <- TermDocumentMatrix(words)
       m <- as.matrix(dtm)
       v <- sort(rowSums(m),decreasing=TRUE)
@@ -153,14 +157,12 @@ shinyServer(function(input, output) {
     
     output$wordFrequencyCloud <-  renderPlot({
       words <- create_word_matrix(prepare_words(select(commit_data_frame(),"message")))
-      
       wordcloud(words = words$word[input$wordFrequencySlider[1]:input$wordFrequencySlider[2]], freq = words$freq, min.freq = 1,
                                            max.words=input$wordFrequencySlider[2], random.order=FALSE, rot.per=0.35, 
                                            colors=brewer.pal(8, "Dark2")) })
     
     output$wordFrequencyPlot <- renderPlot({
         words <- create_word_matrix(prepare_words(select(commit_data_frame(),"message")))
-      
         barplot(words[input$wordFrequencySlider[1]:input$wordFrequencySlider[2],]$freq, 
                 las = 3, 
                 names.arg = words[input$wordFrequencySlider[1]:input$wordFrequencySlider[2],]$word,
@@ -174,7 +176,6 @@ shinyServer(function(input, output) {
    
     
     output$repository <- renderUI({
-        
         select<-commit_data_frame() %>% distinct(repositoryName)%>%
             select(repositoryName) %>%
             rename(Repository=repositoryName) %>%
