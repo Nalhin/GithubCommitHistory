@@ -37,6 +37,7 @@ const getCommitHistory = gql`
                                                             additions
                                                             deletions
                                                             changedFiles
+                                                            id
                                                             committer {
                                                                 user {
                                                                     login

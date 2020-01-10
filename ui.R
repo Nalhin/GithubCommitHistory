@@ -56,7 +56,7 @@ message_page <- sidebarLayout(
 
 activity_page <-sidebarLayout(
     sidebarPanel(
-        dateRangeInput("activityPeriod","Activity period",  format = "yyyy-mm-dd",min="2019-01-01",start="2019-09-01"),
+        dateRangeInput("activityPeriod","Activity period",  format = "yyyy-mm-dd",min="2015-01-01",start="2019-09-01"),
         uiOutput("repository")
     ),
     mainPanel(

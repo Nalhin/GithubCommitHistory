@@ -19,7 +19,6 @@ app.get('/user/:name', async (req, res) => {
         const data = dataParser(response.data, name);
         res.send(data);
     } catch (e) {
-        console.log(e)
         return res.send([]);
     }
 });

@@ -1,5 +1,6 @@
 const dataParser = (data, login) => {
     const commits = [];
+    const ids = {};
 
     data.user.repositories.nodes.forEach((repo) => {
         repo.refs.edges.forEach((ref) =>
@@ -9,9 +10,12 @@ const dataParser = (data, login) => {
                         color: language.color
                     })
                 );
-                const {__typename, author, committer, ...rest} = commit.node;
+                const {__typename, author, committer, id, ...rest} = commit.node;
 
-                if ((author.user && author.user.login === login) || (committer.user && committer.user.login === login)) {
+
+                if (!ids[id] && ((author.user && author.user.login === login) ||
+                    (committer.user && committer.user.login === login))) {
+
                     const languageData = languages.length > 0 ? {
                         language: languages[0].name || 'None',
                         languageColor: languages[0].color || '#ffffff'
@@ -23,6 +27,8 @@ const dataParser = (data, login) => {
                         repositoryName: repo.name,
                         repositoryUrl: repo.url,
                     });
+
+                    ids[id] = true
                 }
             }),
         );
@@ -32,5 +38,6 @@ const dataParser = (data, login) => {
     );
     return commits
 };
+
 
 module.exports = dataParser;
