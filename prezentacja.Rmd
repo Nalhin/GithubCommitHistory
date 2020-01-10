@@ -9,7 +9,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+  
 Aplikacja Web : Krzysztof Olipra
 
 
@@ -70,6 +70,16 @@ query getLatestActivity($userLogin: String!) {
                                                             additions
                                                             deletions
                                                             changedFiles
+                                                               committer {
+                                                                                                                            user {
+                                                                                                                                login
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                        author {
+                                                                                                                            user {
+                                                                                                                                login
+                                                                                                                            }
+                                                                                                                        }
                                                         }
                                                     }
                                                 }
