@@ -16,9 +16,10 @@ app.get('/user/:name', async (req, res) => {
             query,
             variables: {githubUserLogin: name}
         });
-        const data = dataParser(response.data);
+        const data = dataParser(response.data, name);
         res.send(data);
     } catch (e) {
+        console.log(e)
         return res.send([]);
     }
 });

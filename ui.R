@@ -34,7 +34,6 @@ repositories_page<-
         width = 12
     )
 
-
 commit_page<-  basicPage(
    mainPanel(
         DT::dataTableOutput("commits"),

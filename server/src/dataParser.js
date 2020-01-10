@@ -1,4 +1,4 @@
-const dataParser = (data) => {
+const dataParser = (data, login) => {
     const commits = [];
 
     data.user.repositories.nodes.forEach((repo) => {
@@ -9,17 +9,21 @@ const dataParser = (data) => {
                         color: language.color
                     })
                 );
-                const {__typename, ...rest} = commit.node;
-                const languageData = languages.length > 0 ? {
-                    language: languages[0].name || 'None',
-                    languageColor: languages[0].color || '#ffffff'
-                } : {language: "None", languageColor: "#ffffff"};
-                commits.push({
-                    ...rest,
-                    ...languageData,
-                    repositoryName: repo.name,
-                    repositoryUrl: repo.url,
-                });
+                const {__typename, author, committer, ...rest} = commit.node;
+
+                if ((author.user && author.user.login === login) || (committer.user && committer.user.login === login)) {
+                    const languageData = languages.length > 0 ? {
+                        language: languages[0].name || 'None',
+                        languageColor: languages[0].color || '#ffffff'
+                    } : {language: "None", languageColor: "#ffffff"};
+
+                    commits.push({
+                        ...rest,
+                        ...languageData,
+                        repositoryName: repo.name,
+                        repositoryUrl: repo.url,
+                    });
+                }
             }),
         );
     });

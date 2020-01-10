@@ -1,8 +1,41 @@
-const gql = require('graphql-tag');
+---
+title: "Badanie aktywności użytkownika na serwisie GitHub"
+author: "Krzysztof Olipra & Paweł Karwowski"
+date: "Styczeń 2020"
+runtime: shiny
+output: html_document
+---
 
-const getCommitHistory = gql`
-    query getLatestActivity($githubUserLogin: String!) {
-        user(login: $githubUserLogin) {
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Aplikacja Web : Krzysztof Olipra
+
+
+
+Prezentacja : Paweł Karwowski
+
+
+## Technologie
+
+
+* Express
+* Apollo client
+* Graphql
+* R
+* Shiny R
+
+Z faktu, iż Github nie udostępnia "wprost" danych o commitach użytkowników (brak endpointa, zapytania wymagaja tokena), 
+do poprawnego działania aplikacji potrzebne bylo stworzenie wlasnego servera node.js (express).
+Serwer ten za pośrednictwem ApolloClienta wysyła zapytanie graphql na serwery github.
+Z uwagi na poziom skomplikowania ("zagnieżdzenia") opowiedzi, odpowiednio parsuje do formatu nadającego sie do wyświetlania przez R.
+
+## Query
+
+```gql
+query getLatestActivity($userLogin: String!) {
+        user(login: $userLogin) {
             repositories(
                 first: 100
                 orderBy: { field: PUSHED_AT, direction: DESC }
@@ -37,16 +70,6 @@ const getCommitHistory = gql`
                                                             additions
                                                             deletions
                                                             changedFiles
-                                                            committer {
-                                                                user {
-                                                                    login
-                                                                }
-                                                            }
-                                                            author {
-                                                                user {
-                                                                    login
-                                                                }
-                                                            }
                                                         }
                                                     }
                                                 }
@@ -61,6 +84,46 @@ const getCommitHistory = gql`
             }
         }
     }
-`;
 
-module.exports = getCommitHistory;
+```
+## Dane
+
+Aplikacje otrzymuje nastepujące dane w formacie json:
+
+```json
+[{"committedDate": "Data w formacie Iso 8601",
+  "message":"Wiadomośc commita",
+  "url":"Adres commita",
+  "additions":1,
+  "deletions":0,
+  "changedFiles":1,
+  "language":"Język",
+  "languageColor":"Kolor języka",
+  "repositoryName":"Nazwa repozytorium",
+  "repositoryUrl":"Adres repozytorium"}]
+```
+
+
+## Funkcjonalność
+
+Aplikacja udostępnia:
+
+- szczegóły repozytoriów 
+- zmiany w repozytoriach
+- aktywność w czasie
+- najczęściej używane słowa podczas zmian w repozytorium.
+
+
+Domyślnie dane pochodzą z GitHub'a Krzysztofa, aczkolwiek można wybrać dowolnego użytkownika.
+
+## Aplikacja
+
+
+```{r, echo = FALSE}
+shinyAppDir(getwd(),options = list(width = "100%", height = 700))
+```
+
+
+
+
+
