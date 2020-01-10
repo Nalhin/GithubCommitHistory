@@ -19,12 +19,9 @@ app.get('/:name', async (req, res) => {
             variables: {githubUserLogin: name}
         });
         const data = dataParser(response.data);
-        console.log(name);
         res.send(data);
     } catch (e) {
-        console.log(e);
-
-        return [];
+        return res.send([]);
     }
 });
 

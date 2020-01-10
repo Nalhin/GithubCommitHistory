@@ -24,17 +24,29 @@ shinyServer(function(input, output) {
       
     # Load User
   
- # {as.data.frame(fromJSON("commitData.json"))}
+    user_name<-reactiveVal({
+      name<-"Nalhin"
+    })
+  
+    load_error<-reactiveVal({
+      error<-""
+    })
+    
     commit_data_frame <- reactiveVal({
       data<- as.data.frame(fromJSON("commitData.json"))
     })
     
+    output$userStatus <-renderText({
+      paste("Loaded User -",user_name())
+    })
   
     observeEvent(input$loadUser, {
       if(!is.null(input$userName)){
-        data<-as.data.frame(fromJSON(paste0("https://r-api.krzysztofolipra.com/",input$userName)))
+        data<-as.data.frame(fromJSON(paste0("https://api-r.krzysztofolipra.com/",input$userName)))
+        print(data)
         if(length(data)>1){
           commit_data_frame({data})
+          user_name({input$userName})
         }
       }
     })

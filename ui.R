@@ -13,8 +13,13 @@ library(DT)
 
 
 load_user_page <-mainPanel(
+    div(style="font-size:24px;
+        padding-bottom:24px;",
+        textOutput("userStatus")
+    ),
     textInput("userName", "User Name"),
-    actionButton("loadUser", "Load user"),
+    actionButton("loadUser", "Load diffrent user"),
+    textOutput("dataStatus"),
     width = 12
 )
 
