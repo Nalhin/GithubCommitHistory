@@ -70,16 +70,17 @@ query getLatestActivity($userLogin: String!) {
                                                             additions
                                                             deletions
                                                             changedFiles
-                                                               committer {
-                                                                                                                            user {
-                                                                                                                                login
-                                                                                                                            }
-                                                                                                                        }
-                                                                                                                        author {
-                                                                                                                            user {
-                                                                                                                                login
-                                                                                                                            }
-                                                                                                                        }
+                                                            id
+                                                            committer {
+                                                                user {
+                                                                    login
+                                                                }
+                                                            }
+                                                            author {
+                                                                user {
+                                                                    login
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -94,7 +95,7 @@ query getLatestActivity($userLogin: String!) {
             }
         }
     }
-
+}
 ```
 ## Dane
 
