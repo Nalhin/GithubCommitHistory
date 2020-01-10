@@ -1,0 +1,52 @@
+---
+title: "Badanie aktywności użytkownika na serwisie GitHub"
+author: "Krzysztof Olipra & Paweł Karwowski"
+date: "Styczeń 2020"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Aplikacja Web : Krzysztof Olipra
+
+
+
+Prezentacja : Paweł Karwowski
+
+## Technologie
+
+Tu cos o technologiach
+
+## Dane
+
+Aplikacja udostępnia:
+
+
+- szczegóły repozytoriów, 
+
+
+- zmiany w repozytoriach,
+
+
+- aktywność w czasie,
+
+
+- najczęściej używane słowa podczas zmian w repozytorium.
+
+
+Domyślnie dane pochodzą z GitHub'a Krzysztofa, aczkolwiek można wybrać dowolnego użytkownika.
+
+## Aplikacja
+
+
+```{r, echo = FALSE}
+shinyAppDir(getwd(),options = list(width = "100%", height = 700))
+```
+
+
+
+
+
