@@ -12,6 +12,12 @@ library(shinythemes)
 library(DT)
 
 
+load_user_page <-mainPanel(
+    textInput("userName", "User Name"),
+    actionButton("loadUser", "Load user"),
+    width = 12
+)
+
 repositories_page<-
     mainPanel(
         
@@ -62,6 +68,7 @@ shinyUI(fluidPage(
     
     # Application title
     navbarPage("Github Commit History",
+               tabPanel("Load user",load_user_page),
                tabPanel("Repositories",repositories_page),
                tabPanel("Commits",commit_page),
                tabPanel("Messages",message_page),

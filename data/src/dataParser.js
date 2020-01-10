@@ -13,7 +13,7 @@ const dataParser = (data) => {
                 commits.push({
                     ...rest,
                     language: languages[0].name,
-                    languageColor: languages[0].color,
+                    languageColor: languages[0].color || '#ffffff',
                     repositoryName: repo.name,
                     repositoryUrl: repo.url,
                 });

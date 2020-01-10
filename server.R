@@ -12,35 +12,52 @@ library(jsonlite)
 library(tm)
 library(wordcloud)
 library(SnowballC)
-library(dplyr)
 library(quantmod)
 library(lubridate)
 library(ggplot2)
+library(dplyr)
 library(DT)
     
-commit_data_frame <- as.data.frame(fromJSON("commitData.json"))
 
 
 shinyServer(function(input, output) {
       
+    # Load User
+  
+ # {as.data.frame(fromJSON("commitData.json"))}
+    commit_data_frame <- reactiveVal({
+      data<- as.data.frame(fromJSON("commitData.json"))
+    })
+    
+  
+    observeEvent(input$loadUser, {
+      if(!is.null(input$userName)){
+        data<-as.data.frame(fromJSON(paste0("https://r-api.krzysztofolipra.com/",input$userName)))
+        if(length(data)>1){
+          commit_data_frame({data})
+        }
+      }
+    })
+  
     # Summary
     
-    summary <- commit_data_frame %>% 
-      group_by(repositoryName) %>%
-      summarise(
-                "Commits"= n(),
-                "Lines of code" = sum(additions)-sum(deletions),
-                "Total deletions"=sum(deletions),
-                "Total additions"=sum(additions),
-                "Top language"=language[1],
-                repositoryUrl=repositoryUrl[1],
-                languageColor=languageColor[1]
-                ) %>%
-      rename("Repository name"=repositoryName)
+  
     
+    output$repositories <- 
     
-    output$repositories <- DT::renderDataTable(
-      datatable(summary,
+      DT::renderDataTable({
+      datatable( commit_data_frame() %>% 
+                  group_by(repositoryName) %>%
+                  summarise(
+                    "Commits"= n(),
+                    "Lines of code" = sum(additions)-sum(deletions),
+                    "Total deletions"=sum(deletions),
+                    "Total additions"=sum(additions),
+                    "Top language"=language[1],
+                    repositoryUrl=repositoryUrl[1],
+                    languageColor=languageColor[1]
+                  ) %>%
+                  rename("Repository name"=repositoryName),
                 options = list(
                   pageLength = 30,
                   rowCallback = JS(
@@ -60,47 +77,48 @@ shinyServer(function(input, output) {
                     "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
                     "}")
                 ))
-      )
+      })
                 
    
     # Commits
   
     keeps <- c("committedDate","message","additions","deletions","changedFiles","language","repositoryName","languageColor","url")
-  
-    table_data<-commit_data_frame[keeps] %>%
-      mutate(committedDate=as_date(committedDate))%>%
-      arrange(desc(committedDate)) %>%
-      rename(
-        "Commit date"=committedDate,
-        "Message"=message,
-        "Repository Name"=repositoryName,
-        "Additions"=additions,
-        "Deletions"=deletions,
-        "Changed files"=changedFiles,
-        "Language"=language
-      )
     
-    output$commits <- DT::renderDataTable(
-    datatable(table_data,
-    options = list(
-      rowCallback = JS(
-        "function(row, data) {",
-        "$('td:eq(8)',row).css({'display': 'none'});",
-        "$('td:eq(9)',row).css({'display': 'none'});",
-        "var color =$('td:eq(8)', row).text()",
-        "var href =$('td:eq(9)', row).text()",
-        "var rgbaCol = 'rgba(' + parseInt(color.slice(-6,-4),16)+ ',' + parseInt(color.slice(-4,-2),16)+ ',' + parseInt(color.slice(-2),16)+',0.5)';",
-        "$(row).css({'background-color': rgbaCol,'cursor':'pointer','color':'#000'});",
-        "$(row).click(function(){window.open(href)});",
-        "}"),
-      initComplete = JS(
-        "function(settings, json) {",
-        "$('th:contains(languageColor)').css({'display':'none'});",
-        "$('th:contains(url)').css({'display':'none'});",
-        "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-        "}")
-    )) 
-    )
+    output$commits <-
+      DT::renderDataTable({
+        data<-commit_data_frame()
+        datatable(
+            data[keeps] %>%
+            mutate(committedDate=as_date(committedDate))%>%
+            arrange(desc(committedDate)) %>%
+            rename(
+              "Commit date"=committedDate,
+              "Message"=message,
+              "Repository Name"=repositoryName,
+              "Additions"=additions,
+              "Deletions"=deletions,
+              "Changed files"=changedFiles,
+              "Language"=language
+            ),
+        options = list(
+          rowCallback = JS(
+            "function(row, data) {",
+            "$('td:eq(8)',row).css({'display': 'none'});",
+            "$('td:eq(9)',row).css({'display': 'none'});",
+            "var color =$('td:eq(8)', row).text()",
+            "var href =$('td:eq(9)', row).text()",
+            "var rgbaCol = 'rgba(' + parseInt(color.slice(-6,-4),16)+ ',' + parseInt(color.slice(-4,-2),16)+ ',' + parseInt(color.slice(-2),16)+',0.5)';",
+            "$(row).css({'background-color': rgbaCol,'cursor':'pointer','color':'#000'});",
+            "$(row).click(function(){window.open(href)});",
+            "}"),
+          initComplete = JS(
+            "function(settings, json) {",
+            "$('th:contains(languageColor)').css({'display':'none'});",
+            "$('th:contains(url)').css({'display':'none'});",
+            "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+            "}")
+        )) 
+  })
     
     # Messages
     
@@ -120,14 +138,17 @@ shinyServer(function(input, output) {
     }
     
     
-    words <- create_word_matrix(prepare_words(select(commit_data_frame,"message")))
     
-    output$wordFrequencyCloud <-  renderPlot({ wordcloud(words = words$word[input$wordFrequencySlider[1]:input$wordFrequencySlider[2]], freq = words$freq, min.freq = 1,
+    output$wordFrequencyCloud <-  renderPlot({
+      words <- create_word_matrix(prepare_words(select(commit_data_frame(),"message")))
+      
+      wordcloud(words = words$word[input$wordFrequencySlider[1]:input$wordFrequencySlider[2]], freq = words$freq, min.freq = 1,
                                            max.words=input$wordFrequencySlider[2], random.order=FALSE, rot.per=0.35, 
                                            colors=brewer.pal(8, "Dark2")) })
     
     output$wordFrequencyPlot <- renderPlot({
-
+        words <- create_word_matrix(prepare_words(select(commit_data_frame(),"message")))
+      
         barplot(words[input$wordFrequencySlider[1]:input$wordFrequencySlider[2],]$freq, 
                 las = 3, 
                 names.arg = words[input$wordFrequencySlider[1]:input$wordFrequencySlider[2],]$word,
@@ -142,7 +163,7 @@ shinyServer(function(input, output) {
     
     output$repository <- renderUI({
         
-        select<-commit_data_frame %>% distinct(repositoryName)%>%
+        select<-commit_data_frame() %>% distinct(repositoryName)%>%
             select(repositoryName) %>%
             rename(Repository=repositoryName) %>%
             add_row(Repository="All")
@@ -152,7 +173,7 @@ shinyServer(function(input, output) {
     
   
     filtered_count<- reactive({
-        commit_data_frame %>% 
+        commit_data_frame() %>% 
             mutate(committedDate=as_date(committedDate))  %>%
             filter(committedDate >= input$activityPeriod[1] & committedDate <= input$activityPeriod[2]) %>%
             filter(
