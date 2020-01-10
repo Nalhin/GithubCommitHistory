@@ -18,7 +18,8 @@ load_user_page <-mainPanel(
         textOutput("userStatus")
     ),
     textInput("userName", "User Name"),
-    actionButton("loadUser", "Load diffrent user"),
+    actionButton("loadUser", "Load different user"),
+    textOutput("loading"),
     div(style="font-size:20px;
         color:red;
         padding-top:8px;",
@@ -29,7 +30,6 @@ load_user_page <-mainPanel(
 
 repositories_page<-
     mainPanel(
-        
         DT::dataTableOutput("repositories"),
         width = 12
     )
