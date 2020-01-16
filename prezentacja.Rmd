@@ -38,11 +38,11 @@ Prezentacja : Paweł Karwowski
 ## Serwer
 
 Z faktu, iż Github nie udostępnia "wprost" danych o commitach użytkowników (brak endpointa, zapytania wymagaja tokena), 
-do poprawnego działania aplikacji potrzebne bylo stworzenie wlasnego servera node.js (express).
+do poprawnego działania aplikacji potrzebne było stworzenie wlasnego servera node.js (express).
 Serwer ten za pośrednictwem Apollo Clienta wysyła zapytanie graphQL na serwery Github.
 Z uwagi na poziom skomplikowania ("zagnieżdzenia") opowiedzi, odpowiednio parsuje do formatu nadającego sie do wyświetlania przez R.
 
-## Endpoint
+## Endpointy
 
 Serwer w node.js posiada jeden endpoint, który zwraca wszystkie dane potrzebne do analizy aktywności.
 
@@ -173,7 +173,7 @@ Tutaj otrzymujemy szczegółowe informacje co do każdego utworzonego commitu.
 Mapa słów obrazuje nam najczęściej używane słowa podczas tworzenia commita.
 
 ```
-git commit -m “Added new features”
+git commit -m "Added new features"
 ```
 Mapa jest tworzona na podstawie zawartości wiadomości do każdego commita.
 W tym przypadku jest to **Added new features**

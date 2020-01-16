@@ -73,7 +73,7 @@ shinyServer(function(input, output) {
             mutate(N=n()) %>%
             ungroup() %>% 
             filter(N==max(N)) %>% select(language),
-            repositoriesContributedTo= commit_data_frame() %>% 
+          repositoriesContributedTo= commit_data_frame() %>% 
             summarise(unique=n_distinct(repositoryName)) %>%
             select(unique),
           repositoryWithMostContributions=
@@ -85,7 +85,7 @@ shinyServer(function(input, output) {
             select(repositoryName)
         ) %>% rename(
           "Total commits"=commits,
-          "Total lines written"=lines,
+          "Effective additions"=lines,
           "Total additions"=additions,
           "Total deletions"=deletions,
           "Favourite language"=favouriteLanguage,
@@ -169,6 +169,7 @@ shinyServer(function(input, output) {
         options = list(
           rowCallback = JS(
             "function(row, data) {",
+            "$('td:eq(1)',row).css({'white-space': 'nowrap'});",
             "$('td:eq(8)',row).css({'display': 'none'});",
             "$('td:eq(9)',row).css({'display': 'none'});",
             "var color =$('td:eq(8)', row).text()",

@@ -2,3 +2,5 @@ server/node_modules
 .Rhistory
 server/.env
 .idea
+.RData
+.RHistory
