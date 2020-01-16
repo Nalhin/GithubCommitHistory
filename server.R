@@ -38,7 +38,7 @@ shinyServer(function(input, output) {
     })
     
     output$userStatus <-renderText({
-      paste("Loaded User -",user_name())
+      paste("User -",user_name())
     })
   
     output$loadError <-renderText({
@@ -59,6 +59,54 @@ shinyServer(function(input, output) {
         load_error({"Input is empty"})
       }
     })
+    
+    output$userTotal<-DT::renderDataTable({ 
+      datatable(commit_data_frame() %>% 
+        summarise(
+          commits= n(),
+          lines = sum(additions)-sum(deletions),
+          additions=sum(additions),
+          deletions=sum(deletions),
+          favouriteLanguage= 
+            commit_data_frame() %>% 
+            group_by(language) %>% 
+            mutate(N=n()) %>%
+            ungroup() %>% 
+            filter(N==max(N)) %>% select(language),
+            repositoriesContributedTo= commit_data_frame() %>% 
+            summarise(unique=n_distinct(repositoryName)) %>%
+            select(unique),
+          repositoryWithMostContributions=
+            commit_data_frame() %>% 
+            group_by(repositoryName) %>% 
+            mutate(N=n()) %>%
+            ungroup() %>% 
+            filter(N==max(N)) %>% 
+            select(repositoryName)
+        ) %>% rename(
+          "Total commits"=commits,
+          "Total lines written"=lines,
+          "Total additions"=additions,
+          "Total deletions"=deletions,
+          "Favourite language"=favouriteLanguage,
+          "Repositories contributed to"=repositoriesContributedTo,
+          "Favourite repository"=repositoryWithMostContributions
+        ),options=list(
+          rowCallback = JS(
+            "function(row, data) {",
+            "$('td:eq(0)',row).css({'display': 'none'});",
+            "}"),
+          initComplete = JS(
+            "function(settings, json) {",
+            "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+            "$('th:eq(0)').css({'display': 'none'});",
+            "$('.dataTables_info').css({'display':'none'});",
+            "$('.dataTables_paginate').css({'display':'none'});",
+            "$('.dataTables_filter').css({'display':'none'});",
+            "$('.dataTables_length').css({'display':'none'});",
+            "}"),ordering=F
+        )) 
+      })
   
     # Summary
     
@@ -173,8 +221,6 @@ shinyServer(function(input, output) {
        
     
     # Activity
-    
-   
     
     output$repository <- renderUI({
         select<-commit_data_frame() %>% distinct(repositoryName)%>%

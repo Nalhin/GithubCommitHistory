@@ -12,13 +12,15 @@ library(shinythemes)
 library(DT)
 
 
-load_user_page <-mainPanel(
+summary_page <-mainPanel(
     div(style="font-size:24px;
         padding-bottom:24px;",
         textOutput("userStatus")
     ),
-    textInput("userName", "User Name"),
-    actionButton("loadUser", "Load different user"),
+    DT::dataTableOutput("userTotal"),
+    div(style="padding-top:24px;",
+        textInput("userName", "User name")),
+    actionButton("loadUser", "Load user data"),
     textOutput("loading"),
     div(style="font-size:20px;
         color:red;
@@ -44,10 +46,8 @@ commit_page<-  basicPage(
 message_page <- sidebarLayout(
     
     sidebarPanel(
-        sliderInput("wordFrequencySlider", "Selected range (Descending order):", min=1, max=400, value=c(1,20))
+        sliderInput("wordFrequencySlider", "Displayed words (Descending order):", min=1, max=400, value=c(1,20))
     ),
-    
-    # Show a plot of the generated distribution
     mainPanel(
         plotOutput("wordFrequencyCloud"),
         plotOutput("wordFrequencyPlot")
@@ -70,13 +70,10 @@ activity_page <-sidebarLayout(
     )
 )
 
-# Define UI for application that draws a histogram
 shinyUI(fluidPage(
     shinythemes::themeSelector(),
-    
-    # Application title
     navbarPage("Github Commit History",
-               tabPanel("Load user",load_user_page),
+               tabPanel("Summary",summary_page),
                tabPanel("Repositories",repositories_page),
                tabPanel("Commits",commit_page),
                tabPanel("Messages",message_page),

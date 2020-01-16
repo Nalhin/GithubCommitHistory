@@ -3,8 +3,17 @@ title: "Badanie aktywności użytkownika na serwisie GitHub"
 author: "Krzysztof Olipra & Paweł Karwowski"
 date: "Styczeń 2020"
 runtime: shiny
-output: html_document
+output:
+  ioslides_presentation:
+    widescreen: true
 ---
+
+<style>
+slides > slide {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+</style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -21,15 +30,27 @@ Prezentacja : Paweł Karwowski
 
 
 * Express
-* Apollo client
+* Apollo Client
 * Graphql
 * R
 * Shiny R
 
+## Serwer
+
 Z faktu, iż Github nie udostępnia "wprost" danych o commitach użytkowników (brak endpointa, zapytania wymagaja tokena), 
 do poprawnego działania aplikacji potrzebne bylo stworzenie wlasnego servera node.js (express).
-Serwer ten za pośrednictwem ApolloClienta wysyła zapytanie graphql na serwery github.
+Serwer ten za pośrednictwem Apollo Clienta wysyła zapytanie graphQL na serwery Github.
 Z uwagi na poziom skomplikowania ("zagnieżdzenia") opowiedzi, odpowiednio parsuje do formatu nadającego sie do wyświetlania przez R.
+
+## Endpoint
+
+Serwer w node.js posiada jeden endpoint, który zwraca wszystkie dane potrzebne do analizy aktywności.
+
+```javascript
+`https://api-r.krzysztofolipra.com/user/${userName}`
+
+```
+
 
 ## Query
 
@@ -70,16 +91,17 @@ query getLatestActivity($userLogin: String!) {
                                                             additions
                                                             deletions
                                                             changedFiles
-                                                               committer {
-                                                                                                                            user {
-                                                                                                                                login
-                                                                                                                            }
-                                                                                                                        }
-                                                                                                                        author {
-                                                                                                                            user {
-                                                                                                                                login
-                                                                                                                            }
-                                                                                                                        }
+                                                            id
+                                                            committer {
+                                                                user {
+                                                                    login
+                                                                }
+                                                            }
+                                                            author {
+                                                                user {
+                                                                    login
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -94,25 +116,8 @@ query getLatestActivity($userLogin: String!) {
             }
         }
     }
-
+}
 ```
-## Dane
-
-Aplikacje otrzymuje nastepujące dane w formacie json:
-
-```json
-[{"committedDate": "Data w formacie Iso 8601",
-  "message":"Wiadomośc commita",
-  "url":"Adres commita",
-  "additions":1,
-  "deletions":0,
-  "changedFiles":1,
-  "language":"Język",
-  "languageColor":"Kolor języka",
-  "repositoryName":"Nazwa repozytorium",
-  "repositoryUrl":"Adres repozytorium"}]
-```
-
 
 ## Funkcjonalność
 
